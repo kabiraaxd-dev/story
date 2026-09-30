@@ -1,10 +1,10 @@
 <template>
-  <loader class="loader" visible="" msg="" v-show="visible" >
+  <div class="loader" visible="" msg="" v-show="visible" >
     <div>
       <img src="../assets/puff.svg" width="80" alt="loading">
       <p>{{msg}}</p>
     </div>
-  </loader>
+  </div>
 </template>
 <script>
   export default{

@@ -23,6 +23,7 @@ export default {
       errors: []
     }
   },
+  emits: ['back', 'loading'],
   watch: {
     '$route' (){
       // console.log(to);

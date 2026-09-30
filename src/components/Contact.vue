@@ -45,6 +45,7 @@ export default {
             errors: []
         }
     },
+    emits: ['back', 'loading'],
     mounted: function() {
         this.$emit('back', true);
         /*this.$emit('loading', true);*/

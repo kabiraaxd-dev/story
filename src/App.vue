@@ -1,21 +1,24 @@
 <template>
   <div id="app">
-    <!-- <Header v-bind:back="back"></Header> -->
+    <Header v-bind:back="back"></Header>
     <main>
-      <transition name="slide" mode="out-in">
+      <!-- <transition name="slide" mode="out-in"> -->
         <router-view v-on:loading="loading = $event" v-on:back="back = $event"></router-view>
-      </transition>
+      <!-- </transition> -->
         <!-- <Loader v-bind:visible="loading" v-bind:msg="msg" ></Loader> -->
         <!-- <my-error v-bind:visible="error" v-bind:errmsg="errmsg" /> -->
     </main>
-    <!-- <Footer /> -->
+    <Footer />
   </div>
 </template>
 <script setup>
-// import Header from './components/Header.vue'
-// import Footer from './components/Footer.vue'
-// import Loader from './components/Loader.vue';
-// import Error from './components/Error'
+import Header from './components/Header.vue';
+import Footer from './components/Footer.vue'
+import { ref } from 'vue';
+
+const loading = ref(false)
+const back = ref(false)
+
 /* export default {
   name: 'app',
   data() {
@@ -62,7 +65,7 @@ main { }
 .slide-leave-active {
   transition: all .8s ease-in;
 }
-.slide-enter, .slide-leave-to {
+.slide-enter-from, .slide-leave-to {
   transform: translateY(10px);
   opacity: 0;
 }

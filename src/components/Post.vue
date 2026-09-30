@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col s6 ">
                 <span class="grey-text" style="display:inline-block; margin-top:5px;"><i class="flaticon-user blue-text"></i> {{featuredMedia(post._embedded).author}}</span></div>
-            <div class="col s6"><span class="grey-text" style="display:inline-block; margin-top:5px;"><i class="flaticon-calendar blue-text"></i> {{post.date | datestring}}</span></div>
+            <div class="col s6"><span class="grey-text" style="display:inline-block; margin-top:5px;"><i class="flaticon-calendar blue-text"></i> {{post.date}}</span></div>
         </div>
         <div class="image">
             <img v-bind:src="featuredMedia(post._embedded).media" class="responsive-img">
@@ -23,7 +23,7 @@
             <hr>
             <i class="flaticon-grid"></i> Posted in: <span v-for="(value) in featuredMedia(post._embedded).category" v-bind:key="value" class="badge  lime accent-1">{{value}} </span>
             <hr>
-            <a onclick="shareTo()" class="btn white waves-effect pink-text" >
+            <a class="btn white waves-effect pink-text" >
                 <svg height="2em" viewBox="0 0 480 480" width="2em" style="vertical-align:middle;margin-right:10px;" xmlns="http://www.w3.org/2000/svg">
                     <path d="m240 0c-132.546875 0-240 107.453125-240 240s107.453125 240 240 240 240-107.453125 240-240c-.148438-132.484375-107.515625-239.851562-240-240zm0 464c-123.710938 0-224-100.289062-224-224s100.289062-224 224-224 224 100.289062 224 224c-.140625 123.652344-100.347656 223.859375-224 224zm0 0" fill="#e91e63" />
                     <path d="m320 120c-12.460938-.054688-24.226562 5.726562-31.800781 15.621094-7.574219 9.894531-10.082031 22.765625-6.773438 34.777344l-75.402343 37.679687c-13.191407-19.148437-36.832032-28.171875-59.429688-22.683594s-39.46875 24.347657-42.410156 47.414063c-2.941406 23.070312 8.65625 45.558594 29.152344 56.542968 20.5 10.980469 45.648437 8.179688 63.222656-7.046874l42.464844 36.800781c-12.992188 21.375-7.4375 49.144531 12.78125 63.875s48.351562 11.511719 64.71875-7.410157c16.367187-18.917968 15.503906-47.222656-1.984376-65.109374-17.488281-17.886719-45.765624-19.386719-65.050781-3.453126l-42.398437-36.800781c9.1875-14.183593 11.40625-31.785156 6.03125-47.808593l75.527344-37.757813c7.5 9.707031 19.082031 15.382813 31.351562 15.359375 22.089844 0 40-17.910156 40-40s-17.910156-40-40-40zm-160 160c-19.714844-.007812-36.484375-14.382812-39.507812-33.863281-3.023438-19.484375 8.597656-38.261719 27.382812-44.25 18.785156-5.984375 39.128906 2.609375 47.933594 20.25 6.160156 12.402343 5.476562 27.113281-1.8125 38.890625-7.289063 11.777344-20.144532 18.953125-33.996094 18.972656zm120 32c15.054688-.007812 28.078125 10.476562 31.285156 25.183594 3.207032 14.707031-4.269531 29.660156-17.960937 35.917968-13.691407 6.261719-29.894531 2.128907-38.917969-9.917968s-8.429688-28.757813 1.425781-40.136719c6.074219-7.011719 14.890625-11.042969 24.167969-11.046875zm40-128c-9.121094.03125-17.457031-5.160156-21.457031-13.359375-1.695313-3.289063-2.570313-6.941406-2.542969-10.640625 0-13.253906 10.746094-24 24-24s24 10.746094 24 24-10.746094 24-24 24zm0 0" fill="#e91e63" />
@@ -41,7 +41,7 @@
                     <div class="card-stacked">
                         <div class="card-content ">
                             <h6 class="card-title ">
-                                <router-link v-bind:to="'/post/'+item.id" v-html="item.title" class="blue-text text-darken-4"></router-link>
+                                <router-link v-bind:to="'/post/'+item.id" class="blue-text text-darken-4"><span v-html="item.title" ></span></router-link>
                             </h6>
                             <div class="grey-text text-darken-2 excerpt" v-html="item.excerpt"></div>
                             <div class="meta grey-text">
@@ -70,6 +70,7 @@ export default {
             textSize: 1.1
         }
     },
+    emits: ['back', 'loading'],
     watch: {
         '$route'() {
             // console.log(to, from);

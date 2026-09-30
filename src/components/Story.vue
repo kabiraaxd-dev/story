@@ -1,24 +1,25 @@
 <template>
   <div class=" story">
-    <h6 class="center-align page-title">{{name}} - <small class="grey-text">{{catdetail.name}}</small></h6>
-    <!-- <p class="center-align subtitle">{{catdetail.name}}</p> -->
+    <h6 class="center-align page-title">{{name}} - <small class="grey-text">{{story?.title}}</small></h6>
+    <p class="center-align subtitle">{{story?.originallyPublishedIn}}</p>
+    <p class="center-align">{{ story?.year }}</p>
     <!-- results -->
-    <div class="row" v-if="posts.length > 0" >
+    <!-- <div class="row" v-if="posts.length > 0" >
       <div class="col s12" >
         <div class="card horizontal" v-for="item in posts" v-bind:id="item.id" v-bind:key="item.id">
           <div class="card-image" v-bind:style="{'position':'relative', 'background-image': 'url('+ featuredMedia(item._embedded).media +')'}" >
             <router-link v-bind:to="'/post/'+item.id">&nbsp;</router-link>
-            <!-- <img v-bind:src="featuredMedia(item._embedded).media" > -->
+            <img v-bind:src="featuredMedia(item._embedded).media" >
           </div>
           <div class="card-stacked">
             <div class="card-content ">
               <h6 class="card-title " >
-                <router-link v-bind:to="'/post/'+item.id" v-html="item.title.rendered" class="blue-text text-darken-4"></router-link>
+                <router-link v-bind:to="'/post/'+item.id" class="blue-text text-darken-4"><span v-html="item.title.rendered" ></span></router-link>
               </h6>
               <div class="grey-text text-darken-2 excerpt" v-html="item.excerpt.rendered"></div>
               <div class="meta grey-text">
                 <span class="text"><i class=" flaticon-user-1 blue-text text-darken-4">
-  </i> {{featuredMedia(item._embedded).author}}</span> <span class="text" ><i class=" flaticon-calendar blue-text text-darken-4"></i> {{ item.date | datestring}}</span>
+  </i> {{featuredMedia(item._embedded).author}}</span> <span class="text" ><i class=" flaticon-calendar blue-text text-darken-4"></i> {{ item.date}}</span>
               </div>
               <div class="card-action">
                 <router-link v-bind:to="'/post/'+item.id">Read More</router-link>
@@ -27,19 +28,19 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div v-if="errors.length>0" class="card-panel red lighten-2">
       <p v-for="(value, index) in errors" v-bind:key="index">{{index}}: {{value}}</p>
     </div>
-  <div class="center-align">
+  <!-- <div class="center-align">
     <ul class="pagination">
       <li v-show="next"><a v-on:click="currpage--"><i class="flaticon-back"></i></a></li>
-      <!-- <li class="active"><a href="#!">1</a></li> -->
+      
       <li class="waves-effect" v-bind:class="{active : currpage == (index+1)}" v-for="(p, index) in pages" v-bind:key="index"><a v-on:click="currpage=p" v-bind:title="p">{{p}}</a></li>
-      <!-- <li class="waves-effect"><a href="#!">2</a></li> -->
+      
       <li v-show="prev"><a v-on:click="currpage++"><i class="flaticon-next"></i></a></li>
     </ul>
-  </div>
+  </div> -->
     
   </div>
 </template>
@@ -49,18 +50,20 @@ export default {
   data: function() {
     return {
       name: "Story",
-      catdetail: '',
-      oldcat: '',
-      posts: [],
-      perpage: 10,
-      total:'',
-      pages:'',
-      currpage:1,
+      // catdetail: '',
+      // oldcat: '',
+      // posts: [],
+      // perpage: 10,
+      // total:'',
+      // pages:'',
+      // currpage:1,
+      story: null,
       errors: [],
-      previous: ''
+      // previous: ''
     }
   },
-  watch: {
+  emits: ['back', 'loading'],
+  /* watch: {
     '$route'() {
       // console.log(to, from);
       this.currpage = 1;
@@ -70,8 +73,8 @@ export default {
       window.sessionStorage.setItem('currpage',this.currpage);
       this.loadStories();
     }
-  },
-  computed:{
+  }, */
+  /* computed:{
     next: function() {
       if (this.currpage==1) {
         return false;
@@ -86,11 +89,12 @@ export default {
         return true;
       }
     }
-  },
+  }, */
   mounted: function() {
     
     this.errors = [];
-    if (window.sessionStorage.getItem('catid')) {
+    this.loadStories();
+    /* if (window.sessionStorage.getItem('catid')) {
       if (this.$route.params.id == JSON.parse(window.sessionStorage.getItem('catid'))) {
         this.posts = JSON.parse(window.sessionStorage.getItem('story'));
         this.total = window.sessionStorage.getItem('total');
@@ -99,24 +103,22 @@ export default {
       } else {
         this.loadStories();
       }
-    } else {
-      this.loadStories();
-    }
+    }  */
   },
   methods: {
     loadStories: function() {
       this.$emit('back', true);
       this.$emit('loading', true);
-      axios.get('http://www.tellmeastorymom.com/wp-json/wp/v2/posts/?_embed&categories=' + this.$route.params.id +'&page='+this.currpage)
+      axios.get('https://stephen-king-api.onrender.com/api/short/' + this.$route.params.id)
         .then((response) => {
-          /*console.log(response);*/
-          if (response.status == 200) {
-            this.posts = response.data;
-            this.oldcat = this.$route.params.id;
+          console.log(response.data.data);
+          this.story = response.data.data;
+          if (response.data.status == 200) {
+            /* this.oldcat = this.$route.params.id;
             window.sessionStorage.setItem('story', JSON.stringify(response.data));
             window.sessionStorage.setItem('catid', this.$route.params.id);
             window.sessionStorage.setItem('currpage',this.currpage);
-            this.paging();
+            this.paging(); */
           }
         })
         .catch(e => { this.errors.push(e) })
@@ -124,16 +126,16 @@ export default {
           this.$emit('loading', false);
         });
       /*category details*/
-      axios.get('http://www.tellmeastorymom.com/wp-json/wp/v2/categories/' + this.$route.params.id)
+      /* axios.get('http://www.tellmeastorymom.com/wp-json/wp/v2/categories/' + this.$route.params.id)
         .then(response => {
           // console.log(response.data);
           this.catdetail = response.data;
           this.total = response.data.count;
           window.sessionStorage.setItem('total',this.total);
         })
-        .catch(e => { this.errors.push(e) });
+        .catch(e => { this.errors.push(e) }); */
     },
-    featuredMedia: function(data) {
+    /* featuredMedia: function(data) {
       // console.log(data);
       var newobj = {};
       for (var k in data) {
@@ -161,8 +163,8 @@ export default {
 
       // console.log(returnobj);
       return returnobj;
-    },
-    paging: function() {
+    }, */
+    /* paging: function() {
       for (var i = 0; i < this.total; i++) {
         var item = (this.total/this.perpage);
         if (item < 0) {
@@ -173,7 +175,7 @@ export default {
           this.pages = Math.ceil(item);
         }
       }
-    }
+    } */
   }
 }
 

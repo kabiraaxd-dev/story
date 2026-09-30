@@ -18,12 +18,12 @@
           <div class="card-stacked">
             <div class="card-content ">
               <h6 class="card-title" >
-                <router-link v-bind:to="'/post/'+item.id" v-html="item.title.rendered" class="blue-text text-darken-4"></router-link>
+                <router-link v-bind:to="'/post/'+item.id" class="blue-text text-darken-4"><span v-html="item.title.rendered"></span></router-link>
               </h6>
               <div class="grey-text text-darken-2 excerpt" v-html="item.excerpt.rendered"></div>
               <div class="meta grey-text">
                 <span class="text"><i class=" flaticon-user-1 blue-text text-darken-4">
-</i> {{featuredMedia(item._embedded).author}}</span> <span class="text" ><i class=" flaticon-calendar blue-text text-darken-4"></i> {{ item.date | datestring}}</span>
+</i> {{featuredMedia(item._embedded).author}}</span> <span class="text" ><i class=" flaticon-calendar blue-text text-darken-4"></i> {{ item.date}}</span>
               </div>
               <div class="card-action">
                 <router-link v-bind:to="'/post/'+item.id">Read More</router-link>
@@ -55,6 +55,7 @@ export default {
       previous: ''
     }
   },
+  emits: ['back', 'loading'],
   mounted: function() {
     /*fetch session data*/
     if (window.sessionStorage.getItem('search')) {

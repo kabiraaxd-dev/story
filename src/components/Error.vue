@@ -1,7 +1,7 @@
 <template>
-  <error class="card-panel pink" visible="" errmsg="" v-show="visible" >
+  <div class="card-panel pink" visible="" errmsg="" v-show="visible" >
       <p>{{errmsg}}</p>
-  </error>
+  </div>
 </template>
 <script>
   export default{

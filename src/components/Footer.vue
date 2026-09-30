@@ -1,6 +1,7 @@
 <template>
 	<footer class="footer">
-        <div class="submenu" v-show="sub">
+        <p class="center-align">Copyright information</p>
+        <!-- <div class="submenu" v-show="sub">
             <nav>
                 <router-link to="/story/215" class="blue-text text-darken-4">0-3 year</router-link>
                 <router-link to="/story/216" class="blue-text text-darken-4">3-6 year</router-link>
@@ -14,7 +15,7 @@
             <a v-on:click="showSub()" v-bind:class="{'move':active=='story'}"><i class=" flaticon-book "></i></a>
             <router-link to="/women" v-bind:class="{'move':active=='women'}"><i class=" flaticon-mother"></i></router-link>
             <router-link to="/diary" v-bind:class="{'move':active=='diary'}"><i class=" flaticon-open-book"></i></router-link>
-        </nav>
+        </nav> -->
     </footer>
 </template>
 <script>
