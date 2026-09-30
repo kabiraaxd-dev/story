@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story — Vue 2 → Vue 3 Migration Guide</title>
+<style>
+  :root {
+    --green: #42b883;
+    --green-dark: #2fa37a;
+    --green-bg: #e8f8f2;
+    --navy: #35495e;
+    --navy-bg: #eef2f6;
+    --text: #2c3e50;
+    --muted: #7a8ba0;
+    --border: #e3e8ef;
+    --red: #e74c3c;
+    --red-bg: #fdecea;
+    --amber: #e67e22;
+    --amber-bg: #fdf3e3;
+    --code-bg: #1e2630;
+    --code-text: #e6edf3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.65;
+    color: var(--text);
+    background: #f5f7fa;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 28px 28px 56px;
+  }
+  /* ---------- HERO ---------- */
+  .hero {
+    background: linear-gradient(135deg, #42b883 0%, #35a475 45%, #35495e 100%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 46px 36px;
+    box-shadow: 0 12px 28px rgba(53, 73, 94, .18);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before { content: ""; position: absolute; right: -70px; top: -70px; width: 260px; height: 260px; border-radius: 50%; background: rgba(255,255,255,.06); }
+  .hero::after { content: ""; position: absolute; left: -40px; bottom: -80px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,.05); }
+  .hero .kicker { display: inline-block; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.35); color: #fff; font-size: 12px; padding: 3px 12px; border-radius: 999px; letter-spacing: .4px; margin-bottom: 14px; }
+  .hero h1 { font-size: 2.05rem; font-weight: 700; letter-spacing: .2px; }
+  .hero .sub { font-size: 1.05rem; opacity: .92; margin-top: 6px; }
+  .hero .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.3);
+    color: #fff; font-size: 12.5px; font-weight: 600;
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .chip small { opacity: .85; }
+  .download-bar { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    text-decoration: none; font-size: 13px; font-weight: 600;
+    background: #fff; color: #26313f;
+    padding: 7px 16px; border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(38,49,63,.25);
+  }
+  .dl-btn:hover { background: #f2f5f9; }
+  /* ---------- SECTIONS ---------- */
+  section.card {
+    margin-top: 34px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .sec-head {
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(90deg, rgba(66,184,131,.14), rgba(66,184,131,0) 60%), #fff;
+    border-bottom: 2px solid var(--green);
+    padding: 15px 22px 13px;
+  }
+  .sec-num {
+    flex: 0 0 auto;
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--green); color: #fff; font-weight: 700; font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sec-head h2 { font-size: 1.28rem; color: #1f2d3d; }
+  .sec-head .sec-sub { color: var(--muted); font-size: 13px; margin-left: auto; }
+  section.card > .body { padding: 20px 24px; }
+  /* ---------- TYPOGRAPHY ---------- */
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 8px 0 14px; padding-left: 22px; }
+  li { margin-bottom: 5px; }
+  strong { color: #1f2d3d; }
+  a { color: var(--green-dark); }
+  /* ---------- STATUS PILLS ---------- */
+  .pill { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
+  .pill.ok   { background: var(--green-bg);  color: #1d7a53; }
+  .pill.warn { background: var(--amber-bg);  color: #b35f00; }
+  .pill.bad  { background: var(--red-bg);    color: #b03018; }
+  /* ---------- CALLOUTS ---------- */
+  .callout { display: flex; gap: 12px; background: var(--navy-bg); border: 1px solid #c9d6e0; border-left: 4px solid var(--navy); padding: 13px 16px; border-radius: 8px; font-size: 14px; }
+  .callout .tag { font-weight: 700; color: var(--navy); text-transform: uppercase; font-size: 12px; letter-spacing: .5px; min-width: 62px; }
+  .callout.ok   { background: var(--green-bg); border-left-color: var(--green); }
+  .callout.ok .tag   { color: #1d7a53; }
+  .callout.warn { background: var(--amber-bg); border-left-color: var(--amber); }
+  .callout.warn .tag { color: #b35f00; }
+  .callout.bad  { background: var(--red-bg); border-left-color: var(--red); }
+  .callout.bad .tag  { color: #b03018; }
+  /* ---------- TABLES ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 6px 0 14px; }
+  th { background: rgba(66,184,131,.12); color: #1f2d3d; font-weight: 600; text-align: left; padding: 10px 12px; border-bottom: 2px solid rgba(66,184,131,.35); }
+  td { padding: 9px 12px; border-bottom: 1px solid #e6ebf2; }
+  tbody tr:nth-child(even) { background: #f6f8fb; }
+  tbody tr:hover { background: rgba(66,184,131,.07); }
+  td:first-child { font-family: Consolas, "JetBrains Mono", Menlo, monospace; font-size: 12.5px; color: #38506b; white-space: nowrap; }
+  /* ---------- CODE ---------- */
+  .codeblock { margin: 8px 0 16px; border-radius: 10px; overflow: hidden; }
+  .codeblock .filebar { background: #111827; color: #9aa7b5; font-family: Consolas, Menlo, monospace; font-size: 12px; padding: 7px 14px; display: flex; align-items: center; }
+  .codeblock .filebar::before { content: "▣"; margin-right: 8px; color: #6b7c93; }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    padding: 14px 16px; overflow-x: auto;
+    font-family: Consolas, "JetBrains Mono", Menlo, monospace;
+    font-size: 12.8px; line-height: 1.5; tab-size: 2;
+  }
+  code:not([class]) { background: rgba(66,184,131,.12); color: #1d7a53; padding: 1px 6px; border-radius: 4px; font-family: Consolas, Menlo, monospace; font-size: 12.5px; }
+  /* ---------- ISSUE BLOCKS (sections 3 & 4) ---------- */
+  .issue { border: 1px solid var(--border); border-left: 5px solid var(--navy); border-radius: 10px; margin: 14px 0; padding: 14px 18px; background: #fbfcfe; }
+  .issue .issue-title { font-size: 1.02rem; font-weight: 700; color: #1f2d3d; display: flex; gap: 8px; align-items: center; }
+  .issue .issue-title .dot { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; font-size: 13px; color: #fff; display: flex; align-items: center; justify-content: center; }
+  .issue.level-high .dot { background: var(--red); }
+  .issue.level-mid  .dot { background: var(--amber); }
+  .issue.level-low  .dot { background: var(--green); }
+  .issue p { margin: 8px 0 6px; font-size: 13.8px; color: #34455c; }
+  .issue .affects { margin: 4px 0 8px; font-size: 12.5px; color: var(--muted); }
+  /* ---------- TOC ---------- */
+  .toc { margin-top: 20px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; }
+  .toc summary { cursor: pointer; font-weight: 700; color: #1f2d3d; }
+  .toc ol { padding-left: 20px; }
+  .toc ol li { margin: 3px 0; font-size: 13.5px; }
+  .toc ol li a { color: #38506b; text-decoration: none; }
+  /* ---------- FOOTER ---------- */
+  footer { margin-top: 44px; text-align: center; color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--border); padding: 16px 0; }
+  /* ---------- PRINT / PDF ---------- */
+  @media print {
+    @page { size: A4; margin: 13mm 11mm 13mm 11mm; }
+    body { background: #fff; max-width: none; padding: 0; }
+    .hero, .sec-head, th, .pill, pre, .callout, .issue { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .download-bar { display: none; }
+    .codeblock, table, .callout, .issue { break-inside: avoid; }
+    .sec-head { break-after: avoid; }
+    section.card { break-before: page; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <span class="kicker">MIGRATION ANALYSIS&nbsp;·&nbsp;TELL ME A STORY MOM</span>
+  <h1>Vue&nbsp;2 → Vue&nbsp;3 Migration Guide</h1>
+  <p class="sub">Complete file-by-file analysis and update plan for the <code>d:\app\story</code> project</p>
+  <div class="meta-row">
+    <span class="chip">🚫 4&nbsp;Blockers</span>
+    <span class="chip">🔧 12+&nbsp;Code&nbsp;Changes</span>
+    <span class="chip">📁 20&nbsp;Files&nbsp;Affected</span>
+    <span class="chip">🧪 6-Step&nbsp;Validation</span>
+    <span class="chip"><small>Generated</small>&nbsp;29&nbsp;Sep&nbsp;2026</span>
+  </div>
+  <div class="download-bar">
+    <a class="dl-btn" href="VUE3_MIGRATION_GUIDE.html">⬇&nbsp;Download&nbsp;HTML</a>
+    <a class="dl-btn" href="VUE3_MIGRATION_GUIDE.md">⬇&nbsp;Markdown&nbsp;source</a>
+    <a class="dl-btn" href="VUE3_MIGRATION_GUIDE.pdf">📄&nbsp;PDF&nbsp;version</a>
+  </div>
+</header>
+
+<!-- ================= TOC ================= -->
+<details class="toc">
+  <summary>📑 Table of Contents</summary>
+  <ol>
+    <li><a href="#s1">Executive Summary</a></li>
+    <li><a href="#s2">Current Project State</a></li>
+    <li><a href="#s3">Blockers — App Cannot Start</a></li>
+    <li><a href="#s4">Vue 2 → Vue 3 Code Changes</a></li>
+    <li><a href="#s5">Recommended (Optional) Modernization</a></li>
+    <li><a href="#s6">File-by-File Action Plan</a></li>
+    <li><a href="#s7">Reference Snippets</a></li>
+    <li><a href="#s8">Validation Checklist</a></li>
+  </ol>
+</details>
+
+<!-- ================= SECTION 1 ================= -->
+<section class="card" id="s1">
+  <div class="sec-head">
+    <div class="sec-num">1</div>
+    <h2>Executive Summary</h2>
+    <span class="sec-sub">what’s done, what’s missing</span>
+  </div>
+  <div class="body">
+    <p>The project has already been <strong>partially migrated</strong> toward Vue 3:</p>
+    <ul>
+      <li><code>package.json</code> targets <strong>Vue 3.5.43</strong>, <strong>vue-router 4.6.4</strong>, <strong>Vite 6</strong>, and includes <code>@vitejs/plugin-vue</code> (the Vue 3 Vite plugin). <span class="pill ok">DONE</span></li>
+      <li><code>src/main.js</code> already uses the Vue 3 <code>createApp(...).mount(...)</code> API. <span class="pill ok">DONE</span></li>
+      <li><code>src/App.vue</code> already uses <code>&lt;script setup&gt;</code>. <span class="pill ok">DONE</span></li>
+    </ul>
+    <div class="callout warn">
+      <span class="tag">WARNING</span>
+      <div>The migration is <strong>incomplete</strong> — the app <strong>cannot currently build or run</strong> because of <strong>4 blockers</strong> (missing <code>index.html</code>, wrong Vite plugin, broken router, dead Vue CLI config). After those are fixed, ~12 more Vue 2 patterns must be updated (filters, undeclared <code>$emit</code> events, <code>v-html</code> on components, dead files, ESLint stack, etc.).</div>
+    </div>
+    <div class="callout ok">
+      <span class="tag">GOOD NEWS</span>
+      <div>The components use <strong>Options API</strong>, which is fully supported in Vue 3 — no rewrite of <code>data</code> / <code>computed</code> / <code>watch</code> / <code>methods</code> is needed. The migration is <strong>mostly mechanical</strong>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SECTION 2 ================= -->
+<section class="card" id="s2">
+  <div class="sec-head">
+    <div class="sec-num">2</div>
+    <h2>Current Project State</h2>
+    <span class="sec-sub">status at a glance</span>
+  </div>
+  <div class="body">
+    <table>
+      <thead>
+        <tr><th>Area</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Vue runtime</td><td><span class="pill ok">✅ Vue 3.5.43</span> in <code>package.json</code></td></tr>
+        <tr><td>Router</td><td><span class="pill warn">⚠️ vue-router 4.6.4</span> installed, but <code>router/index.js</code> has bugs</td></tr>
+        <tr><td>Build tool</td><td><span class="pill warn">⚠️ Vite 6</span> installed, but <code>vite.config.js</code> loads the <strong>Vue 2</strong> plugin</td></tr>
+        <tr><td>Entry HTML</td><td><span class="pill bad">❌ <code>index.html</code> missing</span> — Vite requires it</td></tr>
+        <tr><td>Entry JS</td><td><span class="pill warn">⚠️</span> <code>main.js</code> is Vue 3; <code>main-new.js</code> is still Vue 2 (dead code)</td></tr>
+        <tr><td>Components</td><td><span class="pill warn">⚠️ Options API</span> (fine) but Vue 2 filters, undeclared emits, <code>v-html</code> on components</td></tr>
+        <tr><td>Config files</td><td><span class="pill bad">❌</span> <code>vue.config.js</code> (Vue CLI) + <code>babel.config.js</code> (CLI preset) are dead</td></tr>
+        <tr><td>Lint stack</td><td><span class="pill bad">❌ ESLint 5</span> + eslint-plugin-vue 5 — cannot parse Vue 3 SFCs</td></tr>
+        <tr><td>Deployment</td><td><span class="pill ok">PhoneGap / Cordova</span> (<code>config.xml</code>) — affects router history + global functions</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- ================= SECTION 3 ================= -->
+<section class="card" id="s3">
+  <div class="sec-head">
+    <div class="sec-num">3</div>
+    <h2>Blockers — App Cannot Start</h2>
+    <span class="sec-sub">🔴 fix these first</span>
+  </div>
+  <div class="body">
+
+    <div class="issue level-high">
+      <div class="issue-title"><span class="dot">1</span> Missing <code>index.html</code> (Vite entry)</div>
+      <p class="affects">Affects: project root · build · <code>npm run dev</code> / <code>npm run build</code></p>
+      <p>Vite needs <code>index.html</code> at the project root as the entry point. Without it, the dev server and build fail with <em>“Could not resolve entry module”</em>.</p>
+      <p><strong>Action:</strong> create <code>index.html</code> with:</p>
+      <div class="codeblock">
+        <div class="filebar">index.html</div>
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8" /&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;
+    &lt;title&gt;Tell Me A Story Mom&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="app"&gt;&lt;/div&gt;
+    &lt;script type="module" src="/src/main.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+      </div>
+      <div class="callout warn">
+        <span class="tag">NOTE</span>
+        <div>The old Vue CLI <code>index.html</code> also contained the Cordova / PhoneGap scripts that define <code>exitApp()</code> and <code>shareTo()</code> (called in <code>Header.vue</code> / <code>Post.vue</code>). Re-add those <code>&lt;script&gt;</code> blocks (see §4.10).</div>
+      </div>
+    </div>
+
+    <div class="issue level-high">
+      <div class="issue-title"><span class="dot">2</span> <code>vite.config.js</code> loads the <strong>Vue 2</strong> plugin</div>
+      <p class="affects">Affects: vite.config.js · plugin resolution</p>
+      <p>It imports <code>createVuePlugin</code> from <code>vite-plugin-vue2</code> — a <strong>Vue 2</strong> plugin that is <strong>not installed</strong> (<code>node_modules/vite-plugin-vue2</code> does not exist). The correct Vue 3 plugin, <code>@vitejs/plugin-vue</code>, <strong>is installed but unused</strong>.</p>
+      <p><strong>Action:</strong> replace with:</p>
+      <div class="codeblock">
+        <div class="filebar">vite.config.js</div>
+<pre>import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
+  },
+});</pre>
+      </div>
+    </div>
+
+    <div class="issue level-high">
+      <div class="issue-title"><span class="dot">3</span> <code>src/router/index.js</code> is broken</div>
+      <p class="affects">Affects: all 8 routes · app bootstrap</p>
+      <p>Three bugs:</p>
+      <ol>
+        <li><strong>Wrong import paths</strong> — the file lives in <code>src/router/</code>, so <code>./views/Home.vue</code> resolves to <code>src/router/views/Home.vue</code> (doesn’t exist). All 8 route imports fail. Correct paths: <code>../views/Home.vue</code> and <code>../components/X.vue</code>.</li>
+        <li><strong>Named export vs default import</strong> — router exports <code>export const router</code>, but <code>main.js</code> does <code>import router from "./router/index.js"</code> (default). <code>app.use(undefined)</code> would crash.</li>
+        <li><strong><code>createMemoryHistory</code></strong> — designed for SSR/tests; the URL never changes and browser back/forward is broken. Use <code>createWebHistory(base)</code> for web hosting, or <code>createWebHashHistory()</code> for Cordova / <code>file://</code> loads (recommended here — see §4.12).</li>
+      </ol>
+      <p><strong>Action:</strong> see the fixed file in §7.</p>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4</span> <code>vue.config.js</code> forces Vue 2 compat mode</div>
+      <p class="affects">Affects: vue.config.js · @vue/compat dependency</p>
+      <p>This Vue CLI / webpack config aliases <code>vue</code> → <code>@vue/compat</code> with <code>compatConfig: { MODE: 2 }</code>. Vite ignores it, but it is misleading and keeps <code>@vue/compat</code> in dependencies.</p>
+      <p><strong>Action:</strong> delete <code>vue.config.js</code> and remove <code>@vue/compat</code> from <code>package.json</code>.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= SECTION 4 ================= -->
+<section class="card" id="s4">
+  <div class="sec-head">
+    <div class="sec-num">4</div>
+    <h2>Vue 2 → Vue 3 Code Changes</h2>
+    <span class="sec-sub">🟠 required updates</span>
+  </div>
+  <div class="body">
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.1</span> Filters removed — <code>{{ item.date | datestring }}</code></div>
+      <p class="affects">Affects: Home.vue · Diary.vue · Post.vue · Search.vue · Story.vue · Women.vue</p>
+      <p>Vue 3 deleted <code>Vue.filter()</code>. The <code>datestring</code> filter is used in <strong>6 files</strong>. In pure Vue 3 this compiles to <code>datestring is not defined</code>.</p>
+      <p><strong>Action:</strong> add a method to each component and update the template:</p>
+      <div class="codeblock">
+        <div class="filebar">methods: { … }</div>
+<pre>methods: {
+  formatDate(value) {
+    return new Date(value).toDateString();
+  }
+}</pre>
+      </div>
+      <div class="codeblock">
+        <div class="filebar">template</div>
+<pre>{{ formatDate(item.date) }}</pre>
+      </div>
+      <div class="callout ok">
+        <span class="tag">ALT</span>
+        <div>Alternatively register once as <code>app.config.globalProperties.datestring</code> — but methods are simpler and type-safe.</div>
+      </div>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.2</span> Undeclared <code>$emit</code> events through <code>&lt;router-view&gt;</code></div>
+      <p class="affects">Affects: Contact · Diary · Page · Post · Search · Story · Women · Home</p>
+      <p>Routed components emit <code>'loading'</code> / <code>'back'</code>; <code>App.vue</code> listens via <code>v-on:loading</code> / <code>v-on:back</code> on <code>&lt;router-view&gt;</code>. In Vue 3, listeners for events <strong>not declared in <code>emits</code></strong> fall through to the component’s root element and are <strong>never triggered by <code>$emit</code></strong>.</p>
+      <p><strong>Action:</strong> add to each emitting component:</p>
+      <div class="codeblock">
+        <div class="filebar">component export</div>
+<pre>export default {
+  emits: ['back', 'loading'],
+  // …
+};</pre>
+      </div>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.3</span> <code>App.vue</code> — empty <code>&lt;script setup&gt;</code></div>
+      <p class="affects">Affects: App.vue · transition CSS</p>
+      <p>The template references <code>loading</code> and <code>back</code> (via <code>v-on:loading="loading = $event"</code>), but the <code>&lt;script setup&gt;</code> block is empty. The transition CSS also uses the Vue 2 class name <code>.slide-enter</code>.</p>
+      <p><strong>Action:</strong></p>
+      <ul>
+        <li>Either define <code>const loading = ref(false)</code> / <code>const back = ref(false)</code> in <code>&lt;script setup&gt;</code> (import <code>ref</code> from <code>vue</code>), or remove those bindings if <code>Header</code> / <code>Loader</code> stay commented out.</li>
+        <li>Rename <code>.slide-enter</code> → <code>.slide-enter-from</code> in the <code>&lt;style&gt;</code> block.</li>
+      </ul>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.4</span> <code>Home.vue</code> — commented-out methods</div>
+      <p class="affects">Affects: Home.vue · runtime error</p>
+      <p>The template calls <code>featuredMedia(item._embedded)</code> <strong>12 times</strong>, but the entire <code>methods:</code> block is commented out → runtime <code>TypeError: featuredMedia is not a function</code>.</p>
+      <p><strong>Action:</strong> restore the <code>featuredMedia</code> method (un-comment the methods block in <code>Home.vue</code>).</p>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.5</span> <code>v-html</code> on <code>&lt;router-link&gt;</code></div>
+      <p class="affects">Affects: Home · Diary · Post · Search · Story · Women</p>
+      <p><code>v-html</code> on a component relies on fragile attrs-fallthrough in Vue 3 and can be overridden.</p>
+      <p><strong>Action:</strong> wrap the HTML in a <code>&lt;span&gt;</code>:</p>
+      <div class="codeblock">
+        <div class="filebar">template</div>
+<pre>&lt;router-link :to="'/post/' + item.id" class="blue-text text-darken-4"&gt;
+  &lt;span v-html="item.title.rendered"&gt;&lt;/span&gt;
+&lt;/router-link&gt;</pre>
+      </div>
+    </div>
+
+    <div class="issue level-low">
+      <div class="issue-title"><span class="dot">4.6</span> Dead Vue 2 entry — <code>src/main-new.js</code></div>
+      <p class="affects">Affects: src/main-new.js</p>
+      <p>Still uses <code>import Vue from 'vue'</code>, <code>new Vue({...}).$mount('#app')</code>, <code>Vue.config.productionTip</code>. Nothing references it.</p>
+      <p><strong>Action:</strong> delete the file.</p>
+    </div>
+<div class="issue level-low">
+      <div class="issue-title"><span class="dot">4.7</span> Dead Babel config — <code>babel.config.js</code></div>
+      <p class="affects">Affects: babel.config.js</p>
+      <p>References <code>@vue/cli-plugin-babel/preset</code>, which is not installed and unused by Vite.</p>
+      <p><strong>Action:</strong> delete the file.</p>
+    </div>
+
+    <div class="issue level-low">
+      <div class="issue-title"><span class="dot">4.8</span> <code>Loader.vue</code> / <code>Error.vue</code> — custom element roots</div>
+      <p class="affects">Affects: Loader.vue · Error.vue</p>
+      <p>Use self-closing HTML tags <code>&lt;loader&gt;</code> / <code>&lt;error&gt;</code> as their own root — Vue 3 warns about unknown custom elements.</p>
+      <p><strong>Action:</strong> change root tags to <code>&lt;div class="loader"&gt;</code> / <code>&lt;div class="error"&gt;</code>.</p>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.9</span> <code>package.json</code> cleanup</div>
+      <p class="affects">Affects: package.json · dependencies</p>
+      <ul>
+        <li>Remove bogus dependency <code>"16": "^0.0.2"</code>.</li>
+        <li>Remove Vue 2-era deps: <code>@vue/compat</code>, <code>@vue/compiler-sfc</code> (bundled with <code>vue</code>), <code>core-js</code>.</li>
+        <li>Upgrade lint stack: <code>eslint@^9</code>, <code>eslint-plugin-vue@^9</code> (or <code>^10</code>), replace <code>babel-eslint</code> with <code>@babel/eslint-parser</code>.</li>
+        <li>Optional: <code>axios@^1</code> (currently <code>0.19</code>, from 2019).</li>
+      </ul>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.10</span> Cordova globals — <code>exitApp()</code> / <code>shareTo()</code></div>
+      <p class="affects">Affects: index.html · Header.vue · Post.vue</p>
+      <p><code>Header.vue</code> calls <code>exitApp()</code>; <code>Post.vue</code> calls <code>shareTo()</code>. These were defined by inline scripts in the old <code>index.html</code> (or Cordova plugins).</p>
+      <p><strong>Action:</strong> re-add the defining <code>&lt;script&gt;</code> blocks to the new <code>index.html</code>.</p>
+    </div>
+
+    <div class="issue level-low">
+      <div class="issue-title"><span class="dot">4.11</span> <code>Header.vue</code> — boolean prop binding</div>
+      <p class="affects">Affects: Header.vue</p>
+      <p><code>&lt;header class="top" back="false"&gt;</code> passes the <strong>string</strong> <code>"false"</code> (truthy) to the <code>back</code> prop.</p>
+      <p><strong>Action:</strong> use <code>:back="false"</code> (or remove the attribute entirely).</p>
+    </div>
+
+    <div class="issue level-mid">
+      <div class="issue-title"><span class="dot">4.12</span> Router history mode</div>
+      <p class="affects">Affects: src/router/index.js</p>
+      <p><code>createMemoryHistory</code> is wrong for this app. Because <code>config.xml</code> indicates a PhoneGap / Cordova deployment (often loaded from <code>file://</code>), <strong><code>createWebHashHistory()</code></strong> is the safe choice; use <code>createWebHistory()</code> only if the app is served from a real web host.</p>
+    </div>
+
+  </div>
+</section>
+<!-- ================= SECTION 5 ================= -->
+<section class="card" id="s5">
+  <div class="sec-head">
+    <div class="sec-num">5</div>
+    <h2>Recommended (Optional) Modernization</h2>
+    <span class="sec-sub">🟢 nice-to-haves</span>
+  </div>
+  <div class="body">
+    <ul>
+      <li><strong>Keep Options API</strong> — fully supported in Vue 3; lowest-risk path.</li>
+      <li>Extract the copy-pasted <code>featuredMedia()</code> + date formatting into a shared composable (<code>src/composables/useWordPress.js</code>).</li>
+      <li>Consider <code>provide</code> / <code>inject</code> (or Pinia) instead of the <code>$emit</code>-through-<code>&lt;router-view&gt;</code> pattern for <code>loading</code> / <code>back</code> state.</li>
+      <li>Lazy-load route components with <code>() =&gt; import(...)</code> to shrink the initial bundle.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= SECTION 6 ================= -->
+<section class="card" id="s6">
+  <div class="sec-head">
+    <div class="sec-num">6</div>
+    <h2>File-by-File Action Plan</h2>
+    <span class="sec-sub">20 files · suggested execution order</span>
+  </div>
+  <div class="body">
+    <table>
+      <thead>
+        <tr><th>File</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>index.html</td><td><strong>Create</strong> — Vite entry + Cordova scripts</td></tr>
+        <tr><td>vite.config.js</td><td><strong>Rewrite</strong> — use <code>@vitejs/plugin-vue</code></td></tr>
+        <tr><td>vue.config.js</td><td><strong>Delete</strong></td></tr>
+        <tr><td>babel.config.js</td><td><strong>Delete</strong></td></tr>
+        <tr><td>src/main-new.js</td><td><strong>Delete</strong></td></tr>
+        <tr><td>src/main.js</td><td>Fix router import; remove Vue 2 comments</td></tr>
+        <tr><td>src/router/index.js</td><td>Fix paths, export, history mode</td></tr>
+        <tr><td>src/App.vue</td><td>Add refs / simplify; fix transition CSS</td></tr>
+        <tr><td>src/views/Home.vue</td><td>Restore methods; <code>formatDate</code>; <code>emits</code>; v-html span</td></tr>
+        <tr><td>src/components/Diary.vue</td><td><code>formatDate</code>; <code>emits</code>; v-html span</td></tr>
+        <tr><td>src/components/Post.vue</td><td><code>formatDate</code>; <code>emits</code>; v-html span</td></tr>
+        <tr><td>src/components/Search.vue</td><td><code>formatDate</code>; <code>emits</code>; v-html span</td></tr>
+        <tr><td>src/components/Story.vue</td><td><code>formatDate</code>; <code>emits</code>; v-html span</td></tr>
+        <tr><td>src/components/Women.vue</td><td><code>formatDate</code>; <code>emits</code>; v-html span</td></tr>
+        <tr><td>src/components/Page.vue</td><td><code>emits</code></td></tr>
+        <tr><td>src/components/Contact.vue</td><td><code>emits</code></td></tr>
+        <tr><td>src/components/Header.vue</td><td><code>:back="false"</code></td></tr>
+        <tr><td>src/components/Loader.vue</td><td>Root tag → <code>&lt;div&gt;</code></td></tr>
+        <tr><td>src/components/Error.vue</td><td>Root tag → <code>&lt;div&gt;</code></td></tr>
+        <tr><td>package.json</td><td>Clean deps; upgrade ESLint stack</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- ================= SECTION 7 ================= -->
+<section class="card" id="s7">
+  <div class="sec-head">
+    <div class="sec-num">7</div>
+    <h2>Reference Snippets</h2>
+    <span class="sec-sub">ready-to-paste fixed files</span>
+  </div>
+  <div class="body">
+
+    <h3 style="font-size:1.02rem;margin:0 0 6px;color:#1f2d3d;">🛠 Fixed <code>vite.config.js</code></h3>
+    <div class="codeblock">
+      <div class="filebar">vite.config.js</div>
+<pre>import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
+  },
+});</pre>
+    </div>
+
+    <h3 style="font-size:1.02rem;margin:0 0 6px;color:#1f2d3d;">🛠 Fixed <code>src/router/index.js</code></h3>
+    <div class="codeblock">
+      <div class="filebar">src/router/index.js</div>
+<pre>import { createRouter, createWebHashHistory } from "vue-router";
+import Home from "../views/Home.vue";
+import Search from "../components/Search.vue";
+import Story from "../components/Story.vue";
+import Women from "../components/Women.vue";
+import Diary from "../components/Diary.vue";
+import Post from "../components/Post.vue";
+import Page from "../components/Page.vue";
+import Contact from "../components/Contact.vue";
+
+export default createRouter({
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  routes: [
+    { path: "/search", name: "Search", component: Search },
+    { path: "/story/:id", name: "Story", component: Story },
+    { path: "/women", name: "Women", component: Women },
+    { path: "/diary", name: "Diary", component: Diary },
+    { path: "/contact", name: "Contact", component: Contact },
+    { path: "/", name: "Home", component: Home },
+    { path: "/post/:id", name: "Post", component: Post },
+    { path: "/page/:id", name: "Page", component: Page },
+  ],
+});</pre>
+    </div>
+
+    <h3 style="font-size:1.02rem;margin:0 0 6px;color:#1f2d3d;">🛠 Fixed <code>src/main.js</code></h3>
+    <div class="codeblock">
+      <div class="filebar">src/main.js</div>
+<pre>import { createApp } from "vue";
+import App from "./App.vue";
+import "materialize-css/dist/css/materialize.min.css";
+import "./font/flaticon.css";
+import "./font/socicon.css";
+import router from "./router/index.js";
+
+const app = createApp(App);
+app.use(router);
+app.mount("#app");</pre>
+    </div>
+
+    <h3 style="font-size:1.02rem;margin:0 0 6px;color:#1f2d3d;">🧩 Component change example (<code>Contact.vue</code>)</h3>
+    <div class="codeblock">
+      <div class="filebar">src/components/Contact.vue (script)</div>
+<pre>export default {
+  name: "Contact",
+  emits: ["back", "loading"],
+  data() { /* unchanged */ },
+  // …
+};</pre>
+    </div>
+
+  </div>
+</section>
+<!-- ================= SECTION 8 ================= -->
+<section class="card" id="s8">
+  <div class="sec-head">
+    <div class="sec-num">8</div>
+    <h2>Validation Checklist</h2>
+    <span class="sec-sub">🧪 how to confirm the migration</span>
+  </div>
+  <div class="body">
+    <ol>
+      <li><code>npm install</code> (after <code>package.json</code> cleanup)</li>
+      <li><code>npm run dev</code> → app loads at <code>http://localhost:5173</code>, no console errors</li>
+      <li><code>npm run build</code> → succeeds, <code>dist/</code> produced</li>
+      <li><code>npm run lint</code> → passes with the upgraded ESLint stack</li>
+      <li>Manual smoke test: Home tabs, Search, Story list + pagination, Post detail, Page, Contact, Diary, Women</li>
+      <li>If deploying to PhoneGap / Cordova: test with <code>createWebHashHistory</code> (deep links / refresh must work)</li>
+    </ol>
+    <div class="callout ok">
+      <span class="tag">DONE?</span>
+      <div>When all 4 blockers are fixed and the 12+ code changes applied, this checklist should pass end-to-end. Keep the Options API as-is; only <code>formatDate</code>, <code>emits</code>, and the template fixes are required.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <p><strong>Vue 2 → Vue 3 Migration Guide</strong> · <a href="VUE3_MIGRATION_GUIDE.md">Markdown</a> · <a href="VUE3_MIGRATION_GUIDE.html">HTML</a> · <a href="VUE3_MIGRATION_GUIDE.pdf">PDF</a></p>
+  <p>Generated by Cline · d:\app\story · 29 Sep 2026 · Vue 3.5.43 / vue-router 4.6.4 / Vite 6</p>
+</footer>
+
+</body>
+</html>
