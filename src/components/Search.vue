@@ -116,7 +116,7 @@ export default {
 }
 
 </script>
-<style>
+<style scoped>
 .search {
   padding: 0 10px;
 }

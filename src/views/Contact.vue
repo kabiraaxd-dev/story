@@ -1,18 +1,20 @@
 <template>
     <div class="contact ">
-        <h5 class="center-align blue-text text-darken-3 ">{{name}}</h5>
+        <h5 class="center-align blue-text text-darken-2 ">{{name}}</h5>
         <div class="container">
             <!-- <p class="center-align">Please feel free to talk to us if you have any question. We endeavour to answer with in 24 hours.</p> -->
-            <div class="card">
+            <!-- <div class="contact-form" v-html="page.content.rendered" v-on:focusin="handleClick"></div> -->
+            <div v-if="errors.length > 0" class="">
+                <Error :errmsg="message" :visible="true"/>
+            </div>
+            <div v-else class="card blue lighten-5">
                 <div class="card-content">
                     <span class="card-title blue-text text-darken-3">Do you have any story/experience to share?</span>
                     <p>For any query please contact us. You can also email us at
                     </p>
-                    <hr><a href="mailto:tellmeastorymom28@gmail.com">tellmeastorymom28@gmail.com</a>
+                    <hr><a href="mailto:vishwajeet.mandal.dev@gmail.com">vishwajeet.mandal.dev@gmail.com</a>
                 </div>
             </div>
-            <div class="contact-form" v-html="page.content.rendered" v-on:focusin="handleClick"></div>
-            <div style="min-height:200px;">&nbsp;</div>
             <!-- <form class="contact" v-on:submit.prevent="sendContact()">
                 <ul class="collection" v-if="errors.length>0">
                   <li v-for="(err, index) in errors" v-bind:key="index" class="collection-item">{{err}}</li>
@@ -35,6 +37,7 @@
 </template>
 <script>
 import axios from 'axios'
+import Error from '../components/Error.vue';
 export default {
     data: function() {
         return {
@@ -46,8 +49,11 @@ export default {
         }
     },
     emits: ['back', 'loading'],
+    components: {
+        Error
+    },
     mounted: function() {
-        this.$emit('back', true);
+        // this.$emit('back', true);
         /*this.$emit('loading', true);*/
         this.loadPage();
 
@@ -58,7 +64,7 @@ export default {
             this.$emit('back', true);
             this.$emit('loading', true);
             /*fetch page detail*/
-            axios.get('http://www.tellmeastorymom.com/wp-json/wp/v2/pages/1351')
+            /* axios.get('http://www.tellmeastorymom.com/wp-json/wp/v2/pages/1351')
                 .then(response => {
                     this.page = response.data;
                 })
@@ -69,24 +75,17 @@ export default {
                 })
                 .then(() => {
                     this.$emit('loading', false);
-                });
-        },
-        getOffset: function(el) {
-            const rect = el.getBoundingClientRect();
-            return {
-                left: rect.left + window.scrollX,
-                top: rect.top + window.scrollY
-            };
+                }); */
         },
         handleClick: function(e) {
-            if (e.target.matches('input, textarea')) {
-                e.target.scrollIntoView({ behavior: "smooth", block: "center" });
-                /*if (window.StatusBar) {
-                    window.StatusBar.show();
-                    setTimeout(function() {
-                        window.StatusBar.hide();
-                    }, 500);
-                }*/
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const href = e.target.getAttribute('href');
+                if (href.startsWith('mailto:')) {
+                    window.location.href = href;
+                } else {
+                    this.$router.push(href);
+                }
             }
         }
     }

@@ -181,7 +181,7 @@ export default {
 }
 
 </script>
-<style>
+<style scoped>
 .story { padding: 0 ; }
 .story .card.horizontal .card-stacked {
   flex: 2;

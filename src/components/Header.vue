@@ -4,8 +4,8 @@
       <nav class="white z-depth-1">
         <div class="nav-wrapper ">
           <RouterLink to="/" class=" brand-logo center indigo-text" id="logo_style">
-            <!-- <img class="responsive-img" alt="Logo" src="../assets/logo.png" style=" height:50px; margin-top: 5px;"> -->
-             Story
+            <img class="responsive-img" alt="Story Logo" src="/story-logo-big.jpg" style=" height:50px; margin-top: 5px;">
+             
           </RouterLink>
           
           <ul class="left " v-show="back">
@@ -25,6 +25,9 @@
       </li>
       <div class="divider"></div>
       <li v-on:click="navTrigger"><RouterLink to="/" class="white-text sidenav-close"><i class="flaticon-home white-text "></i>Home</RouterLink></li>
+      <li @click="navTrigger">
+        <router-link to="/post" class="white-text sidenav-close"><i class="flaticon-home white-text"></i> Stories </router-link>
+      </li>
       <li v-on:click="navTrigger"><RouterLink to="/contact" class="white-text sidenav-close"><i class="flaticon-call white-text "></i>Contact-Us</RouterLink></li>
       <!-- <li v-on:click="navTrigger"><RouterLink to="/page/1461" class="white-text sidenav-close"><i class="flaticon-script white-text "></i>Submit a Story</RouterLink></li> -->
       <li v-on:click="navTrigger"><RouterLink to="/page/581" class="white-text sidenav-close"><i class="flaticon-conversation white-text "></i>Terms &amp; Conditions</RouterLink></li>

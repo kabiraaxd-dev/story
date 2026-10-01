@@ -1,8 +1,22 @@
 <template>
-  <div class=" story">
-    <h6 class="center-align page-title">{{name}} - <small class="grey-text">{{story?.title}}</small></h6>
-    <p class="center-align subtitle">{{story?.originallyPublishedIn}}</p>
-    <p class="center-align">{{ story?.year }}</p>
+  <div class="container story">
+    <div class="card blue lighten-5">
+      <div class="card-content">
+        <span class="badge blue white-text">{{story?.type}}</span>
+        <span class="card-title blue-text darken-4">{{story?.title}}</span>
+        <p class="">{{story?.originallyPublishedIn}}</p>
+        <ul>
+          <li v-for="(value, index) in story?.notes" v-bind:key="index">
+            <span class=" blue-text ">{{ value }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="card-action">
+        <a class="">{{ story?.year }}</a>
+        <a class="">{{ useHumanDate(story?.created_at) }}</a>
+
+      </div>
+    </div>
     <!-- results -->
     <!-- <div class="row" v-if="posts.length > 0" >
       <div class="col s12" >
@@ -46,6 +60,7 @@
 </template>
 <script>
 import axios from 'axios'
+import { useHumanDate } from '../composables/useHumanDate.js'
 export default {
   data: function() {
     return {
@@ -106,6 +121,7 @@ export default {
     }  */
   },
   methods: {
+    useHumanDate,
     loadStories: function() {
       this.$emit('back', true);
       this.$emit('loading', true);
@@ -180,7 +196,7 @@ export default {
 }
 
 </script>
-<style>
+<style scoped>
 .story {
   padding: 0;
 }
@@ -240,12 +256,12 @@ export default {
   margin-right: 10px;
 }
 
-.story .card .card-action {
+/* .story .card .card-action {
   padding: 0;
 }
 
 .story .card .card-action a {
   font-size: 0.75em;
-}
+} */
 
 </style>

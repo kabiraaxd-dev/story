@@ -1,14 +1,17 @@
 <template>
     <div class="home">
-        <h4>Short stories <small>{{ posts.length }}</small></h4>
-        <ul class="collection ">
-            <li v-for="s in posts" :key="s.id" class="collection-item avatar">
-                <img src="../assets/noimage.jpg" alt="" class="circle">
-                <span class="title">{{ s.title }}</span><span class="badge">{{ s.type }}</span>
-                <p>{{ s.originallyPublishedIn }}<br> {{s.year}} - {{ s.created_at }}</p>
-                <RouterLink :to="`/story/${ s.id }`" class="secondary-content"><i class="material-icons">send</i></RouterLink>
-            </li>
-        </ul>
+        <h4 class="center-align">Short stories</h4>
+        <div class="container">
+
+            <ul class="collection ">
+                <li v-for="s in posts" :key="s.id" class="collection-item avatar">
+                    <img src="/noimage.jpg" alt="" class="circle">
+                    <span class="title indigo-text ">{{ s.title }}</span><span class="badge teal lighten-5">{{ s.type }}</span>
+                    <p>{{ s.originallyPublishedIn }}<br> {{ useHumanDate(s.created_at) }}</p>
+                    <RouterLink :to="`/story/${ s.id }`" class="secondary-content"><i class="material-icons">send</i></RouterLink>
+                </li>
+            </ul>
+        </div>
         <!-- <div class="category blue lighten-5 z-depth-1">
             <div class="select">
                 <label for="category">Select Category</label>
@@ -24,6 +27,7 @@
 </template>
 <script>
 import axios from 'axios'
+import { useHumanDate } from '../composables/useHumanDate.js'
 export default {
     data: function() {
         return {
@@ -73,21 +77,13 @@ export default {
             /*fetch recent*/
             // axios.get('http://www.tellmeastorymom.com/wp-json/wp/v2/posts?_embed&page=' + Number(this.postarray[0].currpage) + '&per_page=' + this.perpage)
             // axios.get("https://shortstories-api.onrender.com/")
-            axios.get("https://stephen-king-api.onrender.com/api/shorts?limit=10")
+            axios.get("https://stephen-king-api.onrender.com/api/shorts?page=1&limit=25")
                 .then(response => {
                     // console.log(response.data.data);
                     this.posts = response.data.data
                     // let headers = response.headers;
                     window.sessionStorage.setItem('recent', JSON.stringify(response.data.data));
-                    /* for (var k in headers) {
-                        if (k == 'x-wp-total') {
-                            this.postarray[0].posts = Number(headers[k]);
-                            window.sessionStorage.setItem('poststotal', JSON.stringify(headers[k]));
-                        } else if (k == 'x-wp-totalpages') {
-                            this.postarray[0].pages = Number(headers[k]);
-                            window.sessionStorage.setItem('postspages', JSON.stringify(headers[k]));
-                        }
-                    } */
+                    
                 })
                 .catch(e => { this.errors.push(e) })
                 .then(() => {
@@ -148,6 +144,23 @@ export default {
         this.$emit('back', false);
 
     },
+    methods: {
+        useHumanDate: useHumanDate
+    }
+    /* next: function() {
+        if (this.postarray[0].currpage < this.postarray[0].pages) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    prev: function() {
+        if (this.postarray[0].currpage == this.postarray[0].pages) {
+            return false;
+        } else {
+            return true;
+        }
+    } */
     /* methods: {
         featuredMedia: function(data) {
 
@@ -209,9 +222,9 @@ export default {
     } */
 }
 </script>
-<style>
-.home {
-    padding: 0;
+<style scoped>
+.collection .collection-item .title {
+    font-weight: 600;
 }
 
 .category {
